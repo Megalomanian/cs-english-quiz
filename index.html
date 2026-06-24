@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>计算机专业英语 — 刷题</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f2f5;color:#333;min-height:100vh}
+body.dark{background:#1a1a2e;color:#ddd}
+/* Header */
+.header{background:linear-gradient(135deg,#1a73e8,#1557b0);color:#fff;padding:12px 20px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.dark .header{background:linear-gradient(135deg,#0d47a1,#002171)}
+.header-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;max-width:1100px;margin:0 auto}
+.header h1{font-size:17px;font-weight:700}
+.header .info{font-size:12px;opacity:.9}
+.progress{height:4px;background:rgba(255,255,255,.3);margin-top:8px;border-radius:2px;overflow:hidden}
+.progress div{height:100%;background:#4caf50;transition:width .3s}
+/* Layout */
+.main{max-width:1100px;margin:0 auto;padding:12px;display:flex;gap:12px}
+.sidebar{width:180px;flex-shrink:0;background:#fff;border-radius:12px;padding:12px;position:sticky;top:80px;max-height:calc(100vh - 100px);overflow-y:auto;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.dark .sidebar{background:#16213e;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.sidebar h3{font-size:12px;color:#999;margin-bottom:8px}
+.sidebar .grid{display:flex;flex-wrap:wrap;gap:4px}
+.sidebar .btn-q{width:30px;height:30px;border-radius:6px;border:1px solid #ddd;background:#fff;font-size:11px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.dark .sidebar .btn-q{background:#0f3460;border-color:#1a1a4e;color:#ccc}
+.sidebar .btn-q:hover{border-color:#1a73e8}
+.sidebar .btn-q.active{background:#1a73e8;color:#fff;border-color:#1a73e8;font-weight:700}
+.sidebar .btn-q.done-correct{background:#e8f5e9;border-color:#4caf50;color:#2e7d32}
+.sidebar .btn-q.done-wrong{background:#ffebee;border-color:#f44336;color:#c62828}
+.dark .sidebar .btn-q.done-correct{background:#1b5e20;color:#a5d6a7}
+.dark .sidebar .btn-q.done-wrong{background:#b71c1c;color:#ef9a9a}
+/* Card */
+.content{flex:1;min-width:0}
+.card{background:#fff;border-radius:12px;padding:20px 24px;box-shadow:0 1px 3px rgba(0,0,0,.08);margin-bottom:12px}
+.dark .card{background:#16213e;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.card .meta{margin-bottom:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.card .badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px}
+.badge-num{background:#1a73e8;color:#fff}
+.badge-type{background:#f0f2f5;color:#555}
+.dark .badge-type{background:#0f3460;color:#ccc}
+.badge-exam{background:#fff3e0;color:#e65100}
+.card .qtext{font-size:16px;line-height:1.8;margin-bottom:18px}
+.card .qtext p{margin:0}
+/* Options */
+.opts{margin-bottom:16px}
+.opt{display:flex;align-items:flex-start;padding:11px 16px;margin-bottom:7px;border:2px solid #e8eaed;border-radius:10px;cursor:pointer;transition:all .2s;font-size:15px}
+.dark .opt{border-color:#2a2a5e}
+.opt:hover{border-color:#1a73e8;background:#f5f7ff}
+.dark .opt:hover{background:#1a1a3e}
+.opt.selected{border-color:#1a73e8;background:#e8f0fe}
+.dark .opt.selected{background:#0d2b5e}
+.opt.correct{border-color:#4caf50!important;background:#e8f5e9!important}
+.dark .opt.correct{background:#1b5e20!important}
+.opt.wrong{border-color:#f44336!important;background:#ffebee!important}
+.dark .opt.wrong{background:#b71c1c!important}
+.opt input{margin-right:10px;margin-top:2px;accent-color:#1a73e8;min-width:16px}
+/* Buttons */
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.btn{padding:9px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btn-check{background:#1a73e8;color:#fff;font-size:15px;padding:11px 28px}
+.btn-check:hover:not(:disabled){background:#1557b0}
+.btn-nav{background:#fff;color:#1a73e8;border:2px solid #1a73e8}
+.dark .btn-nav{background:#16213e;color:#64b5f6;border-color:#64b5f6}
+.btn-nav:hover:not(:disabled){background:#e8f0fe}
+.dark .btn-nav:hover:not(:disabled){background:#0d2b5e}
+.btn-mode{background:#f5f5f5;color:#555;font-size:12px;padding:6px 12px}
+.dark .btn-mode{background:#0f3460;color:#ccc}
+.btn-mode.active-mode{background:#1a73e8;color:#fff}
+.btn-theme{background:transparent;color:inherit;border:1px solid #ccc;font-size:12px;padding:5px 10px;border-radius:6px}
+/* Feedback */
+.fb{display:none;margin-top:14px;padding:14px;border-radius:10px;line-height:1.7}
+.fb.show{display:block}
+.fb.correct{background:#e8f5e9;border:1px solid #a5d6a7}
+.fb.wrong{background:#ffebee;border:1px solid #ef9a9a}
+.dark .fb.correct{background:#1b3a1b;border-color:#2e7d32}
+.dark .fb.wrong{background:#3a1b1b;border-color:#c62828}
+.fb .exp{margin-top:10px;font-size:14px}
+.fb .vocab{margin-top:12px}
+.fb .vocab h5{font-size:12px;color:#666;margin-bottom:6px}
+.fb .tags{display:flex;flex-wrap:wrap;gap:5px}
+.fb .tag{background:#fff;border:1px solid #ddd;padding:3px 10px;border-radius:15px;font-size:12px;cursor:default}
+.dark .fb .tag{background:#16213e;border-color:#2a2a5e}
+.fb .tag b{color:#1a73e8}
+/* Translation */
+.trans-box{background:#fff8e1;border:1px solid #ffcc80;padding:14px;border-radius:10px;margin:12px 0;line-height:1.7}
+.dark .trans-box{background:#2a1f00;border-color:#5d4037}
+/* Nav */
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap;gap:8px}
+.score-box{text-align:center;padding:30px}
+.score-box h2{font-size:28px;margin-bottom:8px}
+@media(max-width:768px){.sidebar{display:none}.card{padding:14px}.opt{font-size:14px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-row" style="max-width:1100px;margin:0 auto">
+    <h1>📚 计算机专业英语 — 刷题</h1>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <button class="btn btn-mode active-mode" onclick="switchTab('choice')">选择题 (60)</button>
+      <button class="btn btn-mode" id="btnTrans" onclick="switchTab('trans')">翻译题 (18)</button>
+      <button class="btn btn-theme" onclick="toggleTheme()" id="btnTheme">🌙 深色</button>
+      <span class="info" id="stats">0/60</span>
+    </div>
+  </div>
+  <div class="progress"><div id="progBar"></div></div>
+</div>
+
+<div class="main">
+  <aside class="sidebar" id="sidebar"><h3>📋 题目导航</h3><div class="grid" id="qGrid"></div></aside>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+// ═══════════ DATA ═══════════
+const CHOICE = [{"question": "API stands for ____.", "options": ["A. Advanced Program Internet", "B. Application Program Interface", "C. Automatic Processing Input", "D. Application Platform Instruction"], "correctAnswers": [1], "type": "single", "explanation": "API 是 Application Program Interface（应用程序接口）的缩写。", "vocab": {"API": "App Program Interface 应用程序接口", "instruction": "指令", "interface": "接口"}, "exam": "第一次作业"}, {"question": "A user interface allows users to ____.", "options": ["A. communicate with or operate software", "B. store eight bits", "C. replace the CPU", "D. remove the motherboard"], "correctAnswers": [0], "type": "single", "explanation": "用户界面（UI）让用户能与软件交互操作。", "vocab": {"user interface": "用户界面", "software": "软件", "CPU": "中央处理器", "motherboard": "主板", "interface": "接口"}, "exam": "第一次作业"}, {"question": "Which word refers to programs and instructions used by a computer?____", "options": ["A. hardware", "B. software", "C. motherboard", "D. register"], "correctAnswers": [1], "type": "single", "explanation": "Software（软件）指程序与指令，区别于 Hardware（硬件）。", "vocab": {"software": "软件", "hardware": "硬件", "instruction": "指令", "motherboard": "主板", "register": "寄存器"}, "exam": "第一次作业"}, {"question": "The design structure of a computer system or CPU is called ____.", "options": ["A. architecture", "B. utility", "C. middleware", "D. boot"], "correctAnswers": [0], "type": "single", "explanation": "Architecture（架构）指计算机/CPU 的设计结构。", "vocab": {"architecture": "架构", "CPU": "中央处理器", "middleware": "中间件", "utility": "实用程序", "boot": "启动"}, "exam": "第一次作业"}, {"question": "The ____ carries data among the CPU, memory, and input/output devices.", "options": ["A. interface", "B. bus", "C. firmware", "D. utility"], "correctAnswers": [1], "type": "single", "explanation": "Bus（总线）在 CPU、内存、I/O 间传输数据。", "vocab": {"CPU": "中央处理器", "bus": "总线", "utility": "实用程序", "output device": "输出设备", "firmware": "固件", "interface": "接口"}, "exam": "第一次作业"}, {"question": "Good code should be readable and ____.", "options": ["A. maintainable", "B. electrical", "C. external", "D. manual"], "correctAnswers": [0], "type": "single", "explanation": "好代码需 Readable（可读）+ Maintainable（可维护）。", "vocab": {"readable": "可读的", "maintainable": "可维护的"}, "exam": "第一次作业"}, {"question": "Python mainly follows an ____ design.", "options": ["A. object-oriented", "B. low-readable", "C. hardware-based", "D. non-programmable"], "correctAnswers": [0], "type": "single", "explanation": "Python 遵循 Object-oriented（面向对象）设计。", "vocab": {"hardware": "硬件", "readable": "可读的", "object-oriented": "面向对象的"}, "exam": "第一次作业"}, {"question": "An ____ translates assembly language into machine language.", "options": ["A. editor", "B. assembler", "C. interpreter", "D. database"], "correctAnswers": [1], "type": "single", "explanation": "Assembler（汇编器）翻译汇编→机器码。", "vocab": {"assembler": "汇编器", "assembly language": "汇编语言", "machine language": "机器语言"}, "exam": "第一次作业"}, {"question": "A ____ can be used to add functionality to a Web page.", "options": ["A. script", "B. keyboard", "C. monitor", "D. printer"], "correctAnswers": [0], "type": "single", "explanation": "Script（脚本）为网页添加动态功能。", "vocab": {"script": "脚本", "keyboard": "键盘"}, "exam": "第一次作业"}, {"question": "The computer gets an instruction, ____ it, and then gets the next one.", "options": ["A. stores", "B. executes", "C. designs", "D. names"], "correctAnswers": [1], "type": "single", "explanation": "指令周期：取指→执行→取下一条。", "vocab": {"execute": "执行", "instruction": "指令"}, "exam": "第一次作业"}, {"question": "Which statements about open-source software are correct?____", "options": ["A. Users can study the source code.", "B. Users can improve the source code.", "C. It only means the software is expensive.", "D. Its core idea is source code openness.", "E. It is related to software licensing."], "correctAnswers": [0, 1, 3, 4], "type": "multiple", "explanation": "开源软件核心是源码开放（A/B/D/E），C（昂贵）错。", "vocab": {"software": "软件", "open-source": "开源的", "source code": "源代码"}, "exam": "第一次作业"}, {"question": "Which of the following are related to software rather than physical computer parts?____", "options": ["A. operating system", "B. application program", "C. middleware", "D. utility program", "E. mouse"], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "前四个是软件，Mouse 是物理硬件。", "vocab": {"software": "软件", "operating system": "操作系统", "middleware": "中间件", "utility": "实用程序", "mouse": "鼠标"}, "exam": "第一次作业"}, {"question": "Which statements correctly describe system software?____", "options": ["A. It helps run computer hardware.", "B. It supports application software.", "C. It serves as an interface between hardware, applications, and users.", "D. It includes the operating system.", "E. It is the same as a keyboard."], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "系统软件=运行硬件+支持应用。E（键盘）不是。", "vocab": {"software": "软件", "hardware": "硬件", "operating system": "操作系统", "system software": "系统软件", "keyboard": "键盘", "interface": "接口"}, "exam": "第一次作业"}, {"question": "Which statements about external hardware devices are correct?____", "options": ["A. They are also called peripherals.", "B. They are located outside the computer.", "C. They may include input and output devices.", "D. They are always software programs.", "E. They can be connected to a computer system."], "correctAnswers": [0, 1, 2, 4], "type": "multiple", "explanation": "外设(Peripherals)在机箱外，含 I/O。D 错：不是软件。", "vocab": {"software": "软件", "hardware": "硬件", "peripheral": "外设", "output device": "输出设备"}, "exam": "第一次作业"}, {"question": "Which of the following are examples of input devices?____", "options": ["A. keyboard", "B. mouse", "C. microphone", "D. projector", "E. touchscreen"], "correctAnswers": [0, 1, 2, 4], "type": "multiple", "explanation": "前四个是输入设备，Projector 是输出。", "vocab": {"input device": "输入设备", "keyboard": "键盘", "microphone": "麦克风", "touchscreen": "触摸屏", "projector": "投影仪", "mouse": "鼠标"}, "exam": "第一次作业"}, {"question": "Which words describe good code or good software design?____", "options": ["A. readable", "B. maintainable", "C. elegant", "D. intuitive", "E. random"], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "四要素：Readable/Maintainable/Elegant/Intuitive。", "vocab": {"software": "软件", "readable": "可读的", "maintainable": "可维护的", "elegant": "优雅的", "intuitive": "直观的"}, "exam": "第一次作业"}, {"question": "A programming language includes ______ used to write computer programs.____", "options": ["A. rules", "B. symbols", "C. keywords", "D. physical screens", "E. printer ink"], "correctAnswers": [0, 1, 2], "type": "multiple", "explanation": "编程语言=Rules+Symbols+Keywords。", "vocab": {"programming language": "编程语言", "keyword": "关键字"}, "exam": "第一次作业"}, {"question": "Which of the following are examples of high-level programming languages?____", "options": ["A. Python", "B. Java", "C. C++", "D. JavaScript", "E. Machine code"], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "前四个是高级语言，Machine code 是低级。", "vocab": {"script": "脚本", "programming language": "编程语言"}, "exam": "第一次作业"}, {"question": "A data structure is used for ______ data in a computer.____", "options": ["A. organizing", "B. processing", "C. retrieving", "D. storing", "E. destroying"], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "四大功能：Organizing/Processing/Retrieving/Storing。", "vocab": {"data structure": "数据结构"}, "exam": "第一次作业"}, {"question": "Which of the following are examples of linear data structures?____", "options": ["A. Array", "B. Linked list", "C. Stack", "D. Queue", "E. Graph"], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "前四个是线性结构，Graph 是非线性。", "vocab": {"data structure": "数据结构", "array": "数组", "linked list": "链表", "stack": "栈", "queue": "队列", "graph": "图", "linear": "线性的"}, "exam": "第一次作业"}, {"question": "A file system may store files in a ____ of directories.", "options": ["A. hierarchy", "B. processor", "C. program", "D. keyboard"], "correctAnswers": [0], "type": "single", "explanation": "文件系统以 Hierarchy（层级结构）组织。", "vocab": {"keyboard": "键盘", "hierarchy": "层级"}, "exam": "第二次作业"}, {"question": "A hardware device can ____ an interrupt.", "options": ["A. trigger", "B. divide", "C. store", "D. translate"], "correctAnswers": [0], "type": "single", "explanation": "硬件可 Trigger（触发）中断通知 CPU。", "vocab": {"hardware": "硬件", "interrupt": "中断", "trigger": "触发"}, "exam": "第二次作业"}, {"question": "The kernel may handle an event according to its ____.", "options": ["A. directory", "B. priority", "C. disk", "D. icon"], "correctAnswers": [1], "type": "single", "explanation": "内核按 Priority（优先级）处理事件。", "vocab": {"directory": "目录", "kernel": "内核", "priority": "优先级"}, "exam": "第二次作业"}, {"question": "A ____ operating system manages a group of distinct computers.", "options": ["A. single-tasking", "B. distributed", "C. personal", "D. graphical"], "correctAnswers": [1], "type": "single", "explanation": "Distributed OS 管理独立计算机为统一系统。", "vocab": {"operating system": "操作系统", "graph": "图", "distributed": "分布式的", "single-tasking": "单任务"}, "exam": "第二次作业"}, {"question": "A ____ system can run only one program at a time.", "options": ["A. distributed", "B. multi-user", "C. single-tasking", "D. preemptive"], "correctAnswers": [2], "type": "single", "explanation": "Single-tasking 一次只运行一个程序。", "vocab": {"distributed": "分布式的", "single-tasking": "单任务"}, "exam": "第二次作业"}, {"question": "Network security involves the ____ of access to data.", "options": ["A. authorization", "B. attenuation", "C. topology", "D. backbone"], "correctAnswers": [0], "type": "single", "explanation": "Authorization（授权）控制数据访问。", "vocab": {"network security": "网络安全", "authorization": "授权", "topology": "拓扑"}, "exam": "第二次作业"}, {"question": "A media access method is used to handle ____ on the wire.", "options": ["A. collisions", "B. certificates", "C. servers", "D. browsers"], "correctAnswers": [0], "type": "single", "explanation": "介质访问控制处理 Collisions（冲突）。", "vocab": {"collision": "冲突"}, "exam": "第二次作业"}, {"question": "In a bus topology, each computer is treated as a ____ on the bus.", "options": ["A. node", "B. router", "C. server room", "D. webpage"], "correctAnswers": [0], "type": "single", "explanation": "总线拓扑中每台是 Node（节点）。", "vocab": {"bus": "总线", "topology": "拓扑", "node": "节点"}, "exam": "第二次作业"}, {"question": "The way devices are connected in a network is called ____.", "options": ["A. topology", "B. malware", "C. authorization", "D. encryption"], "correctAnswers": [0], "type": "single", "explanation": "连接方式叫 Topology（拓扑）。", "vocab": {"authorization": "授权", "topology": "拓扑"}, "exam": "第二次作业"}, {"question": "TCP/IP is a protocol ____ used in many large networks.", "options": ["A. suite", "B. cable", "C. password", "D. collision"], "correctAnswers": [0], "type": "single", "explanation": "TCP/IP 是 Protocol Suite（协议套件）。", "vocab": {"collision": "冲突", "protocol": "协议", "suite": "套件", "TCP/IP": "传输控制协议/互联网协议"}, "exam": "第二次作业"}, {"question": "Which statements describe memory management?____", "options": ["A. It controls computer memory.", "B. It coordinates computer memory.", "C. It assigns memory blocks to running programs.", "D. It helps optimize system performance.", "E. It replaces all hardware devices."], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "内存管理=控制/协调/分配/优化。", "vocab": {"hardware": "硬件", "memory management": "内存管理"}, "exam": "第二次作业"}, {"question": "Which of the following are core functions of an operating system?____", "options": ["A. Process management", "B. Memory management", "C. File management", "D. Device management", "E. Cooking management"], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "OS 四核心：进程/内存/文件/设备管理。", "vocab": {"operating system": "操作系统", "memory management": "内存管理"}, "exam": "第二次作业"}, {"question": "Which statements about GUI are correct?____", "options": ["A. It stands for Graphical User Interface.", "B. It allows users to interact through graphical icons.", "C. It uses visual indicators.", "D. Windows and macOS are related examples.", "E. It is only made of command-line text."], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "GUI=图形用户界面。Windows/macOS 是 GUI。", "vocab": {"user interface": "用户界面", "graph": "图", "GUI": "图形用户界面", "interface": "接口"}, "exam": "第二次作业"}, {"question": "Which of the following are examples of operating systems shown or mentioned in Part 1?____", "options": ["A. Windows", "B. macOS", "C. Linux", "D. Android", "E. iOS"], "correctAnswers": [0, 1, 2, 3, 4], "type": "multiple", "explanation": "五大 OS：Windows/macOS/Linux/Android/iOS。", "vocab": {"operating system": "操作系统"}, "exam": "第二次作业"}, {"question": "Which of the following terms are related to memory or file storage?____", "options": ["A. paging", "B. segmentation", "C. disk", "D. directory", "E. directory tree"], "correctAnswers": [0, 1, 2, 3, 4], "type": "multiple", "explanation": "Paging/Segmentation/Disk/Directory 都是存储概念。", "vocab": {"directory": "目录", "paging": "分页", "segmentation": "分段"}, "exam": "第二次作业"}, {"question": "Which network protocols or technologies are shown in the visual material of Part 1?____", "options": ["A. IP", "B. TCP", "C. UDP", "D. DNS", "E. HTTPS"], "correctAnswers": [0, 1, 2, 3, 4], "type": "multiple", "explanation": "五大协议：IP/TCP/UDP/DNS/HTTPS。", "vocab": {"protocol": "协议"}, "exam": "第二次作业"}, {"question": "Which statements describe the peer-to-peer model?____", "options": ["A. All computers have equal status.", "B. Nodes share data directly with one another.", "C. It does not require a central server.", "D. Only the central server can store data.", "E. It is also called P2P."], "correctAnswers": [0, 1, 2, 4], "type": "multiple", "explanation": "P2P：节点平等+直接共享+无中心服务器。", "vocab": {"node": "节点", "peer-to-peer": "点对点", "P2P": "点对点"}, "exam": "第二次作业"}, {"question": "Which of the following are examples of network hardware or transmission media?____", "options": ["A. modem", "B. network interface card", "C. fiber optic cable", "D. Ethernet cable", "E. spreadsheet formula"], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "前四个是硬件，Spreadsheet 是软件。", "vocab": {"hardware": "硬件", "modem": "调制解调器", "network interface card": "网卡", "fiber optic": "光纤", "Ethernet": "以太网", "spreadsheet": "电子表格", "interface": "接口"}, "exam": "第二次作业"}, {"question": "Which statements about network architecture are correct?____", "options": ["A. It refers to the design of a computer network.", "B. It includes physical components.", "C. It includes functional organization.", "D. It describes how a network is built and organized.", "E. It only means a user password."], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "网络架构=物理+功能组织。", "vocab": {"architecture": "架构"}, "exam": "第二次作业"}, {"question": "Which statements correctly describe a computer network?____", "options": ["A. It includes two or more interconnected computer systems.", "B. It uses communication protocols.", "C. It can share resources and information.", "D. It always works without any communication rules.", "E. It allows computers to communicate with each other."], "correctAnswers": [0, 1, 2, 4], "type": "multiple", "explanation": "=互联系统+协议+资源共享。必须有通信规则。", "vocab": {"protocol": "协议"}, "exam": "第二次作业"}, {"question": "A ____ cloud combines aspects of both public and private clouds.", "options": ["A. hybrid", "B. single-tasking", "C. local-only", "D. unavailable"], "correctAnswers": [0], "type": "single", "explanation": "Hybrid Cloud（混合云）结合公私优势。", "vocab": {"single-tasking": "单任务", "hybrid": "混合"}, "exam": "第三次作业"}, {"question": "A cloud server can be ____ through a network interface or an API.", "options": ["A. instantiated", "B. interrupted", "C. collided", "D. repeated"], "correctAnswers": [0], "type": "single", "explanation": "Instantiated（实例化）=动态创建。", "vocab": {"API": "App Program Interface 应用程序接口", "interrupt": "中断", "instantiate": "实例化", "interface": "接口"}, "exam": "第三次作业"}, {"question": "Cloud-oriented architecture is described as a ____ model.", "options": ["A. conceptual", "B. physical-only", "C. single-user", "D. unauthorized"], "correctAnswers": [0], "type": "single", "explanation": "Conceptual（概念性）模型。", "vocab": {"architecture": "架构", "conceptual": "概念性"}, "exam": "第三次作业"}, {"question": "A cloud bridge runs applications whose components are ____ into multiple cloud environments.", "options": ["A. integrated", "B. unavailable", "C. unauthorized", "D. physical"], "correctAnswers": [0], "type": "single", "explanation": "Integrated（集成）多云组件。", "vocab": {"integrate": "集成"}, "exam": "第三次作业"}, {"question": "A cloud ____ may make important services temporarily unavailable.", "options": ["A. outage", "B. topology", "C. frame", "D. node"], "correctAnswers": [0], "type": "single", "explanation": "Outage（服务中断）是关键风险。", "vocab": {"topology": "拓扑", "node": "节点", "outage": "服务中断"}, "exam": "第三次作业"}, {"question": "An e-commerce business should have a way to handle warranty ____.", "options": ["A. claims", "B. discounts", "C. sensors", "D. forums"], "correctAnswers": [0], "type": "single", "explanation": "Warranty Claims（保修索赔）是售后核心。", "vocab": {"bus": "总线", "warranty": "保修", "claim": "索赔", "forum": "论坛"}, "exam": "第三次作业"}, {"question": "An online ____ needs a secure system for receiving orders and payments.", "options": ["A. merchant", "B. sensor", "C. pattern", "D. warehouse"], "correctAnswers": [0], "type": "single", "explanation": "Merchant（商家）需要安全支付。", "vocab": {"merchant": "商家", "pattern": "模式"}, "exam": "第三次作业"}, {"question": "Data mining can be used to ____ future behavior from existing data.", "options": ["A. forecast", "B. ship", "C. integrate", "D. discount"], "correctAnswers": [0], "type": "single", "explanation": "Data Mining 可 Forecast（预测）行为。", "vocab": {"integrate": "集成", "data mining": "数据挖掘", "forecast": "预测"}, "exam": "第三次作业"}, {"question": "Analysts use big data to discover repeatable business ____.", "options": ["A. patterns", "B. passwords", "C. routers", "D. screens"], "correctAnswers": [0], "type": "single", "explanation": "大数据发现 Patterns（模式）。", "vocab": {"bus": "总线", "pattern": "模式"}, "exam": "第三次作业"}, {"question": "A company can analyze ____ data to understand user behavior.", "options": ["A. clickstream", "B. payment", "C. merchant", "D. retail"], "correctAnswers": [0], "type": "single", "explanation": "Clickstream（点击流）分析用户行为。", "vocab": {"merchant": "商家", "clickstream": "点击流", "retail": "零售"}, "exam": "第三次作业"}, {"question": "Which statements describe SaaS?____", "options": ["A. It stands for Software as a Service.", "B. It delivers fully functional software applications over the Internet.", "C. It is often provided on a subscription basis.", "D. Google Workspace, Microsoft 365, and Zoom are examples.", "E. It provides only raw physical servers."], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "SaaS=软件即服务，订阅制。例子：GWS/M365/Zoom。", "vocab": {"software": "软件", "script": "脚本", "SaaS": "软件即服务"}, "exam": "第三次作业"}, {"question": "Which of the following belong to the three main cloud service models?____", "options": ["A. IaaS", "B. PaaS", "C. SaaS", "D. LAN", "E. WAN"], "correctAnswers": [0, 1, 2], "type": "multiple", "explanation": "三大云模型：IaaS/PaaS/SaaS。", "vocab": {"SaaS": "软件即服务", "IaaS": "基础设施即服务", "PaaS": "平台即服务"}, "exam": "第三次作业"}, {"question": "Which statements describe rapid elasticity?____", "options": ["A. Resources can be scaled up according to demand.", "B. Resources can be scaled down according to demand.", "C. It helps cloud systems respond to changing workloads.", "D. It means resources can never change.", "E. It is related to flexible resource allocation."], "correctAnswers": [0, 1, 2, 4], "type": "multiple", "explanation": "快速弹性=动态伸缩。不是固定不变。", "vocab": {"API": "App Program Interface 应用程序接口", "elasticity": "弹性"}, "exam": "第三次作业"}, {"question": "Which of the following services may be delivered through cloud computing?____", "options": ["A. servers", "B. storage", "C. databases", "D. networking", "E. software"], "correctAnswers": [0, 1, 2, 3, 4], "type": "multiple", "explanation": "云服务：服务器/存储/数据库/网络/软件。", "vocab": {"software": "软件"}, "exam": "第三次作业"}, {"question": "Which are key characteristics of cloud computing mentioned in Part 1?____", "options": ["A. on-demand self-service", "B. rapid elasticity", "C. pay-as-you-go", "D. manual-only resource allocation", "E. fixed resources that never change"], "correctAnswers": [0, 1, 2], "type": "multiple", "explanation": "三特征：按需自助/快速弹性/按量付费。", "vocab": {"API": "App Program Interface 应用程序接口", "elasticity": "弹性", "on-demand": "按需", "self-service": "自助", "pay-as-you-go": "按量付费"}, "exam": "第三次作业"}, {"question": "Which items are related to e-commerce operations?____", "options": ["A. supplier", "B. retail business", "C. forum", "D. affiliate program", "E. warranty claim"], "correctAnswers": [0, 1, 2, 3, 4], "type": "multiple", "explanation": "电商五要素：供应商/零售/论坛/联盟/保修。", "vocab": {"bus": "总线", "warranty": "保修", "claim": "索赔", "supplier": "供应商", "retail": "零售", "affiliate": "联盟", "forum": "论坛"}, "exam": "第三次作业"}, {"question": "Which factors may be used in dynamic pricing?____", "options": ["A. Current demand", "B. Competitor pricing", "C. Inventory levels", "D. Real-time adjustment", "E. Random guessing only"], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "动态定价四依据：需求/竞品/库存/实时。", "vocab": {"dynamic pricing": "动态定价", "inventory": "库存"}, "exam": "第三次作业"}, {"question": "Which statements correctly describe “Variety” in big data?____", "options": ["A. It refers to different types of data.", "B. It includes different formats of data.", "C. It may include structured data such as databases.", "D. It may include unstructured data such as text, images, and videos.", "E. It means all data must have the same format."], "correctAnswers": [0, 1, 2, 3], "type": "multiple", "explanation": "Variety=数据类型多样（结构化+非结构化）。", "vocab": {"Variety": "多样性(3V之一)", "unstructured data": "非结构化数据"}, "exam": "第三次作业"}, {"question": "Which statements correctly describe big data?____", "options": ["A. It refers to extremely large and complex datasets.", "B. It may be difficult to manage with traditional software.", "C. It may be difficult to process with traditional software.", "D. It is always small enough for regular computers to handle easily.", "E. It may be difficult to analyze with traditional software."], "correctAnswers": [0, 1, 2, 4], "type": "multiple", "explanation": "正确答案 ABCE：It refers to extremely large and complex datasets., It may be difficult to manage with traditional software., It may be difficult to process with traditional software., It may be difficult to analyze with traditional software.。", "vocab": {"software": "软件"}, "exam": "第三次作业"}, {"question": "Which of the following are the 3 V’s of Big Data?____", "options": ["A. Volume", "B. Velocity", "C. Variety", "D. Visibility", "E. Verification"], "correctAnswers": [0, 1, 2], "type": "multiple", "explanation": "3V：Volume(体量)/Velocity(速度)/Variety(多样性)。", "vocab": {"Variety": "多样性(3V之一)", "Volume": "体量(3V之一)", "Velocity": "速度(3V之一)"}, "exam": "第三次作业"}];
+const TRANS = [{"text": "Translate the sentence into English: 在硬件系统的最底层,所有数据和指令都以二进制形式表示,即由0和1的组合构成,这些单位被称为比特。", "reference": "At the lowest level of a hardware system, all data and instructions are represented in binary form, consisting of 0 and 1, which is called bit.", "exam": "第一次作业"}, {"text": "Translate the sentence into English: 主存储器通常指RAM,它是易失性的,只能临时保存数据,而辅存储器可以永久保存数据。", "reference": "Main memory usually refers to RAM, which is volatile and can only temporarily store data, while secondary storage can store data permanently.", "exam": "第一次作业"}, {"text": "Translate the sentence into Chinese: The central processing unit, often considered the brain of the computer, is responsible for fetching, decoding, and executing instructions sequentially.", "reference": "中央处理器通常被视为计算机的大脑，负责按顺序取指令、解码指令和执行指令。", "exam": "第一次作业"}, {"text": "Translate the sentence into English: 现代软件开发严重依赖预构建的库函数,这些库函数为复杂操作提供直观的API。", "reference": "Modern software development heavily relies on pre-built library functions, which provide intuitive APIs for complex operations.", "exam": "第一次作业"}, {"text": "Translate the sentence into Chinese: A compiler first parses the source statements according to syntax rules to check for grammatical errors, then translates the validated code into bytecode or assembly language before final execution.", "reference": "编译器首先根据语法规则解析源语句以检查语法错误，然后将验证通过的代码翻译成字节码或汇编语言，最后再执行。", "exam": "第一次作业"}, {"text": "Translate the sentence into Chinese: A variable in a programming language is a storage location paired with an associated symbolic name, which contains some known or unknown quantity of information referred to as a value.", "reference": "编程语言中的变量是一个存储位置，带有一个关联的符号名称，其中包含一些已知或未知的信息量，这些被称为值。", "exam": "第一次作业"}, {"text": "Translate the sentence into English: 分布式操作系统将一组联网计算机管理为一个单一的连贯系统,并维护统一的文件目录结构。", "reference": "A distributed operating system manages a group of networked computers as a single coherent system and maintains a unified file directory structure.", "exam": "第二次作业"}, {"text": "Translate the sentence into English: 在抢占式调度环境中,硬件设备可以触发中断,迫使管理者模式挂起当前程序。", "reference": "In a preemptive scheduling environment, hardware devices can trigger interrupts, forcing the supervisor mode to suspend the current program.", "exam": "第二次作业"}, {"text": "Translate the sentence into Chinese: Modern multi-tasking systems use time-sharing techniques to achieve concurrency, allowing the CPU to interrupt one process and switch to another when a higher priority task becomes ready.", "reference": "现代多任务系统使用分时技术来实现并发性，允许当一个更高优先级的任务就绪时，CPU中断一个进程并切换到另一个进程。", "exam": "第二次作业"}, {"text": "Translate the sentence into English: 为了防止未经授权的访问,网络系统要求用户使用密码或数字证书来认证身份。", "reference": "To prevent unauthorized access, network systems require users to authenticate their identity using passwords or digital certificates.", "exam": "第二次作业"}, {"text": "Translate the sentence into Chinese: Malware and spyware represent significant security threats, as malicious programs may encrypt user files for ransom or covertly capture personal data without authorization.", "reference": "恶意软件和间谍软件构成了重大的安全威胁，因为恶意程序可能会加密用户的文件以勒索赎金，或在未经授权的情况下秘密窃取个人数据。", "exam": "第二次作业"}, {"text": "Translate the sentence into Chinese: A concentrator connects multiple workstations at a central point, while a repeater amplifies signals to counteract attenuation, and a switch forwards each frame only to the correct destination based on MAC addresses.", "reference": "集线器在中心点连接多个工作站，而中继器放大信号以抵消衰减，交换机则基于MAC地址将每个帧仅转发到正确的目标。", "exam": "第二次作业"}, {"text": "Translate the sentence into English: 混合云架构结合专用私有资源和公有云服务,提供弹性和可扩展性。", "reference": "Hybrid cloud architecture combines dedicated private resources with public cloud services, providing elasticity and scalability.", "exam": "第三次作业"}, {"text": "Translate the sentence into English: 云经纪人帮助客户选择最优服务提供商,确保实现的可移植性。", "reference": "Cloud brokers help customers select the optimal cloud service provider to ensure implementation portability.", "exam": "第三次作业"}, {"text": "Translate the sentence into Chinese: Cloud computing creates an abstraction layer that hides technical complexity, allowing configurable components to be dynamically assembled and integrated into unified service environments.", "reference": "云计算创建了一个隐藏技术复杂性的抽象层，使可配置组件能够被动态组装并集成到统一的服务环境中。", "exam": "第三次作业"}, {"text": "Translate the sentence into English: 高效的零售业务需要集成的供应链管理,将供应商直接连接到库存系统。", "reference": "Efficient retail operations require integrated supply chain management, connecting suppliers directly to inventory systems.", "exam": "第三次作业"}, {"text": "Translate the sentence into Chinese: An online merchant can establish a successful e-commerce business by selecting high-demand products and integrating secure payment gateways to process customer transactions efficiently.", "reference": "在线商家可以通过选择高需求产品并集成安全的支付网关来高效处理客户交易，从而建立成功的电子商务业务。", "exam": "第三次作业"}, {"text": "Translate the sentence into Chinese: Modern analytics platforms process both unstructured and semi-structured data to identify hidden patterns and correlations, enabling enterprises to develop data-driven business strategies.", "reference": "现代分析平台处理非结构化和半结构化数据，以识别隐藏的模式和相关性，使企业能够制定数据驱动的业务战略。", "exam": "第三次作业"}];
+
+let tab = 'choice'; // 'choice' | 'trans'
+let qs = CHOICE;
+let idx = 0;
+let done = {};  // {qIndex: {chosen:[], isCorrect:bool, revealed:bool}}
+
+// ═══════════ RENDER ═══════════
+function renderSidebar() {
+  const g = document.getElementById('qGrid');
+  g.innerHTML = qs.map((_, i) => {
+    let cls = 'btn-q';
+    if (i === idx) cls += ' active';
+    else if (done[i] && done[i].isCorrect) cls += ' done-correct';
+    else if (done[i] && !done[i].isCorrect) cls += ' done-wrong';
+    return `<button class="${cls}" onclick="go(${i})">${i+1}</button>`;
+  }).join('');
+}
+
+function render() {
+  const q = qs[idx];
+  const d = done[idx];
+  const revealed = d && d.revealed;
+
+  let meta = `<span class="badge badge-num">#${idx+1}</span>`;
+  if (tab==='choice') {
+    const typeMap = {single:'🔘 单选', multiple:'☑️ 多选'};
+    meta += `<span class="badge badge-type">${typeMap[q.type]||q.type}</span>`;
+  } else {
+    meta += `<span class="badge badge-type">📝 翻译</span>`;
+  }
+  meta += `<span class="badge badge-exam">${q.exam}</span>`;
+
+  let body = `<div class="qtext">${q.question||q.text}</div>`;
+
+  if (tab === 'choice') {
+    // Options
+    body += '<div class="opts">';
+    q.options.forEach((optText, oi) => {
+      let cls = 'opt';
+      if (revealed && q.correctAnswers.includes(oi)) cls += ' correct';
+      if (revealed && d && d.chosen.includes(oi) && !q.correctAnswers.includes(oi)) cls += ' wrong';
+      if (!revealed && d && d.chosen.includes(oi)) cls += ' selected';
+      const checked = (!revealed && d && d.chosen.includes(oi)) ? 'checked' : '';
+      const inpType = q.type === 'single' ? 'radio' : 'checkbox';
+      const name = q.type === 'single' ? 'opt_'+idx : 'opt_'+idx+'_'+oi;
+      body += `<label class="${cls}"><input type="${inpType}" name="${name}" value="${oi}" ${checked} ${revealed?'disabled':''} onchange="onSelect(this,${oi})">${optText}</label>`;
+    });
+    body += '</div>';
+  }
+
+  // Buttons
+  if (tab === 'choice') {
+    if (!revealed) {
+      body += '<button class="btn btn-check" id="btnCheck" onclick="check()">✔ 提交答案</button>';
+    }
+  } else {
+    if (!revealed) {
+      body += '<button class="btn btn-check" style="background:#ff9800" onclick="showTrans()">📋 显示参考答案</button>';
+    } else {
+      body += `<div class="trans-box"><strong>📋 参考答案：</strong><br>${q.reference||''}</div>`;
+    }
+  }
+
+  // Feedback
+  if (revealed) {
+    const isCorrect = d ? d.isCorrect : true; // translation always "correct" (self-check)
+    const cls = isCorrect ? 'correct' : 'wrong';
+    const title = isCorrect ? '✅ 回答正确！' : '❌ 回答错误';
+    let fb = `<div class="fb show ${cls}"><strong>${title}</strong>`;
+    if (tab === 'choice' && !isCorrect) {
+      const correctText = q.correctAnswers.map(i => q.options[i]).join('；');
+      fb += `<p style="margin-top:6px"><strong>正确答案：</strong>${correctText}</p>`;
+    }
+    if (q.explanation) fb += `<div class="exp">💡 <strong>解析：</strong>${q.explanation}</div>`;
+    if (q.vocab && Object.keys(q.vocab).length) {
+      fb += '<div class="vocab"><h5>📖 生词</h5><div class="tags">';
+      for (const [en, cn] of Object.entries(q.vocab)) {
+        fb += `<span class="tag"><b>${en}</b>：${cn}</span>`;
+      }
+      fb += '</div></div>';
+    }
+    fb += '</div>';
+    body += fb;
+  }
+
+  // Navigation
+  body += `<div class="nav-row">
+    <button class="btn btn-nav" ${idx===0?'disabled':''} onclick="go(${idx-1})">◀ 上一题</button>
+    <span style="font-size:13px;color:#999">${idx+1} / ${qs.length}</span>
+    <button class="btn btn-nav" ${idx>=qs.length-1?'disabled':''} onclick="go(${idx+1})">下一题 ▶</button>
+  </div>`;
+
+  document.getElementById('content').innerHTML = `<div class="card"><div class="meta">${meta}</div>${body}</div>`;
+  updateProgress();
+  renderSidebar();
+}
+
+// ═══════════ ACTIONS ═══════════
+function onSelect(input, oi) {
+  const q = qs[idx];
+  if (!done[idx]) done[idx] = {chosen:[], isCorrect:false, revealed:false};
+  if (q.type === 'single') {
+    done[idx].chosen = [oi];
+  } else {
+    // multi: collect all checked
+    const checks = document.querySelectorAll('.opts input:checked');
+    done[idx].chosen = Array.from(checks).map(c => parseInt(c.value));
+  }
+  render();
+}
+
+function check() {
+  const q = qs[idx];
+  const d = done[idx];
+  if (!d || !d.chosen.length) return;
+  const correct = new Set(q.correctAnswers);
+  const user = new Set(d.chosen);
+  let wrongPick = false;
+  for (const v of user) { if (!correct.has(v)) wrongPick = true; }
+  d.isCorrect = !wrongPick && user.size === correct.size;
+  d.revealed = true;
+  render();
+}
+
+function showTrans() {
+  if (!done[idx]) done[idx] = {chosen:[], isCorrect:true, revealed:false};
+  done[idx].isCorrect = true;
+  done[idx].revealed = true;
+  render();
+}
+
+function go(i) {
+  idx = Math.max(0, Math.min(qs.length-1, i));
+  render();
+}
+
+function updateProgress() {
+  const total = qs.length;
+  const completed = Object.values(done).filter(d => d && d.revealed).length;
+  const correct = Object.values(done).filter(d => d && d.isCorrect).length;
+  document.getElementById('progBar').style.width = (completed/total*100)+'%';
+  document.getElementById('stats').textContent = `${completed}/${total} | ✅${correct}`;
+}
+
+// ═══════════ TABS ═══════════
+function switchTab(t) {
+  tab = t;
+  qs = (t === 'choice') ? CHOICE : TRANS;
+  idx = 0;
+  done = {};
+  document.getElementById('sidebar').style.display = (t==='choice') ? 'block' : 'none';
+  document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active-mode'));
+  if (t==='choice') document.querySelector('.btn-mode').classList.add('active-mode');
+  else document.getElementById('btnTrans').classList.add('active-mode');
+  render();
+}
+
+// ═══════════ THEME ═══════════
+let dark = false;
+function toggleTheme() {
+  dark = !dark;
+  document.body.classList.toggle('dark', dark);
+  document.getElementById('btnTheme').textContent = dark ? '☀️ 浅色' : '🌙 深色';
+}
+
+// ═══════════ KEYBOARD ═══════════
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') go(idx-1);
+  else if (e.key === 'ArrowRight') go(idx+1);
+  else if (tab === 'choice' && !(done[idx]&&done[idx].revealed)) {
+    const map = {'1':0,'2':1,'3':2,'4':3,'5':4,'a':0,'b':1,'c':2,'d':3,'e':4};
+    if (map[e.key] !== undefined) {
+      const oi = map[e.key];
+      if (oi < qs[idx].options.length) {
+        if (!done[idx]) done[idx] = {chosen:[], isCorrect:false, revealed:false};
+        if (qs[idx].type === 'single') done[idx].chosen = [oi];
+        else {
+          const cur = new Set(done[idx].chosen);
+          cur.has(oi) ? cur.delete(oi) : cur.add(oi);
+          done[idx].chosen = Array.from(cur);
+        }
+        render();
+      }
+    }
+    if (e.key === 'Enter') check();
+  }
+});
+
+// Init
+render();
+</script>
+</body>
+</html>
