@@ -2,10 +2,14 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 permissions:
   contents: read
   pages: write
   id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
 jobs:
   deploy:
     environment:
@@ -19,11 +23,3 @@ jobs:
         with:
           path: '.'
       - uses: actions/deploy-pages@v4
-
-git add .github
-git commit -m "Switch to GitHub Actions Pages deployment"
-git push origin main
-
-# Switch Pages to workflow mode
-gh api repos/Megalomanian/cs-english-quiz/pages -X PUT -f "build_type=workflow" 2>&1
-echo "Switched to Actions. Waiting for deploy..."
